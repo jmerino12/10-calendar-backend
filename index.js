@@ -1,19 +1,22 @@
 const express = require('express');
+const cors = require('cors');
 const { dbConnection } = require('./database/config');
 require('dotenv').config();
 
 const app = express()
 
-dbConnection()
+dbConnection();
 
-app.use(express.static('public'))
+app.use(cors())
 
-app.use(express.json())
+app.use(express.static('public'));
+
+app.use(express.json());
 
 
-app.use('/api/auth', require('./routes/auth'))
+app.use('/api/auth', require('./routes/auth'));
 
 
 app.listen(process.env.PORT, () => {
-    console.log(`Server corriendo en el puerto ${process.env.PORT}`)
+    console.log(`Server corriendo en el puerto ${process.env.PORT}`);
 })
