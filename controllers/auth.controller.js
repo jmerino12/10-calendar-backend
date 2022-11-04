@@ -34,17 +34,37 @@ const crearUsuario = async (req, res = response) => {
 
 }
 
-const loginUsario = (req, res = response) => {
+const loginUsario = async (req, res = response) => {
     const { email, password } = req.body
-
-    res.json({
-        ok: true,
-        msg: 'login',
-        login: {
-            email,
-            password
+    try {
+        const usuario = await Usuario.findOne({ email });
+        if (!usuario) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Usuario y contraseña no son correctos.',
+            })
         }
-    })
+
+        const validPassword = bcrypt.compareSync(password, usuario.password);
+        if (!validPassword) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Password incorrect'
+            })
+        }
+
+        res.status(200).json({
+            ok: true,
+            uid: usuario.id,
+            name: usuario.name
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: 'Hablar con el admin',
+        })
+    }
 }
 
 const reevalidarToken = (req, res = response) => {
